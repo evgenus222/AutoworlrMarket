@@ -1,0 +1,130 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Донат Магазин</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #1a202c, #2d3748);
+            min-height: 100vh;
+            color: #e2e8f0;
+            font-family: 'Arial', sans-serif;
+        }
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 255, 0, 0.2);
+        }
+        .minecraft-btn {
+            background-color: #10b981;
+            transition: background-color 0.3s ease;
+        }
+        .minecraft-btn:hover {
+            background-color: #059669;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center py-10">
+    <header class="text-center mb-12">
+        <h1 class="text-5xl font-bold text-green-400 mb-4">Minecraft Донат Магазин</h1>
+        <p class="text-xl text-gray-300">Поддержи сервер и получи крутые бонусы!</p>
+    </header>
+
+    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full px-4">
+        <!-- Разбан -->
+        <div class="card bg-gray-800 rounded-lg p-6 flex flex-col items-center">
+            <h2 class="text-2xl font-semibold text-green-400 mb-4">Разбан</h2>
+            <p class="text-gray-300 mb-4">Сними бан и возвращайся в игру!</p>
+            <p class="text-3xl font-bold text-white mb-6">1000 ₽</p>
+            <button class="minecraft-btn text-white font-semibold py-2 px-6 rounded-lg">Купить</button>
+        </div>
+
+        <!-- Увеличение времени AFK -->
+        <div class="card bg-gray-800 rounded-lg p-6 flex flex-col items-center">
+            <h2 class="text-2xl font-semibold text-green-400 mb-4">Увеличение AFK</h2>
+            <p class="text-gray-300 mb-4">+10 минут к времени AFK</p>
+            <p class="text-3xl font-bold text-white mb-6">150 ₽</p>
+            <button class="minecraft-btn text-white font-semibold py-2 px-6 rounded-lg">Купить</button>
+        </div>
+
+        <!-- Флай -->
+        <div class="card bg-gray-800 rounded-lg p-6 flex flex-col items-center">
+            <h2 class="text-2xl font-semibold text-green-400 mb-4">Флай</h2>
+            <p class="text-gray-300 mb-4">Летай по миру свободно!</p>
+            <p class="text-3xl font-bold text-white mb-6">550 ₽</p>
+            <button class="minecraft-btn text-white font-semibold py-2 px-6 rounded-lg">Купить</button>
+        </div>
+
+        <!-- Должность в парламенте -->
+        <div class="card bg-gray-800 rounded-lg p-6 flex flex-col items-center">
+            <h2 class="text-2xl font-semibold text-green-400 mb-4">Должность в парламенте</h2>
+            <p class="text-gray-300 mb-4">Стань частью управления сервером</p>
+            <p class="text-3xl font-bold text-white mb-6">399 ₽</p>
+            <button class="minecraft-btn text-white font-semibold py-2 px-6 rounded-lg">Купить</button>
+        </div>
+
+        <!-- Смена цвета ника -->
+        <div class="card bg-gray-800 rounded-lg p-6 flex flex-col items-center">
+            <h2 class="text-2xl font-semibold text-green-400 mb-4">Смена цвета ника</h2>
+            <p class="text-gray-300 mb-4">Выделись с уникальным цветом ника</p>
+            <p class="text-3xl font-bold text-white mb-6">299 ₽</p>
+            <button class="minecraft-btn text-white font-semibold py-2 px-6 rounded-lg">Купить</button>
+        </div>
+
+        <!-- Доступ к варпам -->
+        <div class="card bg-gray-800 rounded-lg p-6 flex flex-col items-center">
+            <h2 class="text-2xl font-semibold text-green-400 mb-4">Доступ к варпам</h2>
+            <p class="text-gray-300 mb-4">Быстро перемещайся по серверу</p>
+            <p class="text-3xl font-bold text-white mb-6">199 ₽</p>
+            <button class="minecraft-btn text-white font-semibold py-2 px-6 rounded-lg">Купить</button>
+        </div>
+    </main>
+
+    <footer class="mt-12 text-center text-gray-400">
+        <p>&copy; 2025 Minecraft Сервер. Все права защищены.</p>
+    </footer>
+</body>
+</html>
